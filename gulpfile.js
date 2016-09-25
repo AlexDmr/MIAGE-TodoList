@@ -9,6 +9,7 @@ var gulp				= require('gulp')
   , stylish 			= require('gulp-tslint-stylish')
   , sourcemaps 			= require('gulp-sourcemaps')
   , jasmine             = require("gulp-jasmine")
+  , Server 				= require('karma').Server
   ;
 
 
@@ -101,6 +102,13 @@ gulp.task( 'tsc', function() {
 			}*/
 		})).pipe( gulp.dest( def.dest ) );
 	});
+});
+
+gulp.task("karma", [], function(done) {
+	new Server({
+		configFile: __dirname + '/karma.conf.js',
+		singleRun: false
+	}, done).start();
 });
 
 gulp.task('default', ['watch', 'tsc'], function() {

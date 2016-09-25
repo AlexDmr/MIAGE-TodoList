@@ -64,17 +64,17 @@ type filterChose = (c : NF.Chose) => boolean;
   directives	: [ItemChose]
 })
 export class ListeChoses {
-	@Input() titre	: string;
+    @Input() titre	: string;
+    filtre          : filterChose;
     private nf      : NF.ListeChoses;
     filtreTous      : filterChose = (c) => true;
     filtreFait      : filterChose = (c) => c.fait;
     filtreNonFait   : filterChose = (c) => !c.fait;
-    filtre          : filterChose;
 	constructor		(private serviceListe: ListeChosesService) {
 		console.log(this);
+        this.filtre = this.filtreTous;
         serviceListe.getData().then( (nf) => {
             this.nf = nf;
-            this.filtre = this.filtreTous;
         });
 	};
 	Ajouter			(texte: string   ) {this.nf.Ajouter(texte);}
