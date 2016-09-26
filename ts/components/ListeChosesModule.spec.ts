@@ -1,50 +1,62 @@
-import {ComponentFixture, TestBed, ComponentFixtureAutoDetect}    from "@angular/core/testing";
-import {By, BrowserModule}                           from "@angular/platform-browser";
+import { ComponentFixture, TestBed, ComponentFixtureAutoDetect
+        , tick, async, fakeAsync }    from "@angular/core/testing";
+import {By}                             from "@angular/platform-browser";
 import { DebugElement }                 from "@angular/core";
 
-import { FormsModule, ReactiveFormsModule }                  from "@angular/forms";
-import { CommonModule }                 from "@angular/common";
+import { FormsModule }                  from "@angular/forms";
 
 import { ListeChosesService }           from "./nf/service";
 import { ItemChose }                    from "./Chose";
 import { ListeChoses }                  from "./ListeChoses";
 import * as NF                          from "./nf/nf";
 
-let comp:    ListeChoses;
-let fixture: ComponentFixture<ListeChoses>;
-let el:      DebugElement;
-let ListeChosesServiceStub = {
-    nf  : new NF.ListeChoses(),
-    getData	() : Promise<NF.ListeChoses> {
-        return Promise.resolve( this.nf );
-    }
-};
-
 describe("Composant Angular2 ListeChose", function () {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports     : [CommonModule, BrowserModule, FormsModule, ReactiveFormsModule],
+            imports     : [ FormsModule ],
             declarations: [ ListeChoses, ItemChose ], // declare the test component
             providers   : [
-                {   provide : ListeChosesService,
-                    useValue: ListeChosesServiceStub },
+                { provide   : ListeChosesService,
+                    useValue: new ListeChosesService() },
                 {   provide : ComponentFixtureAutoDetect,
                     useValue: true }
             ]
         });
-        fixture = TestBed.createComponent(ListeChoses);
-        comp = fixture.componentInstance; // BannerComponent test instance
-        // get title DebugElement by element name
-        el = fixture.debugElement.query(By.css("h1"));
-        // Get the injected service
-        let serviceListe = fixture.debugElement.injector.get(ListeChosesService);
-        serviceListe.nf.Ajouter("1").Ajouter("2").Ajouter("3");
+
     });
-    it("2 Filtre initialisé à TOUS", () => {
+    it("Initialisation", fakeAsync( () => {
+        let fixture = TestBed.createComponent(ListeChoses);
+        let comp = fixture.componentInstance;
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+        expect( comp.nf ).toBeDefined("Le noyau devrait être définit");
         expect(comp.filtre).toBe(comp.filtreTous, "Le filtre devrait être initialisé à filtreTous.");
-    });
-    it("2 Calcul du nombre de choses à faire", () => {
-        expect(comp.NbchosesAFaire()).toEqual(3, "Il reste trois choses à faire");
-    });
+    }));
+    it("Calcul du nombre de choses", fakeAsync( () => {
+        let fixture = TestBed.createComponent(ListeChoses);
+        let comp = fixture.componentInstance;
+
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();        // update view with nf
+
+        // Simuler ajout de choses
+        let inputNewTodo = fixture.debugElement.query(By.css('input.new-todo'));
+        inputNewTodo.properties['value'] = "1";
+        let formNewTodo = fixture.debugElement.query(By.css('form'));
+        formNewTodo.triggerEventHandler("submit", null);
+
+
+        expect(inputNewTodo).toBeDefined("il manque la balise input.new-todo");
+        expect(comp.Nbchoses()).toEqual(1, "Il devrait y avoir trois choses");
+        expect(comp.NbchosesAFaire()).toEqual(1, "Il devrait y avoir trois choses restantes");
+    })) ;
+    /*
+    it("Calcul du nombre de choses restantes à faire après toggle", async( () => {
+        let fixture = TestBed.createComponent(ListeChoses);
+
+    })) ;
+    */
 
 });

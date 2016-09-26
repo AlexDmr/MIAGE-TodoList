@@ -4,10 +4,9 @@ import * as NF from "./nf";
 @Injectable()
 export class ListeChosesService {
     nf: NF.ListeChoses;
-    constructor() {
-        this.nf = new NF.ListeChoses();
-    }
+    //constructor() {}
     getData	() : Promise<NF.ListeChoses> {
-        return new Promise<NF.ListeChoses>( (resolve) => { setTimeout(() => resolve( this.nf ), 500); } );
+        this.nf = new NF.ListeChoses();
+        return Promise.resolve( this.nf );
     }
 };
