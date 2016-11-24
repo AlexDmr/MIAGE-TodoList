@@ -9,4 +9,4 @@ export class ListeChosesService {
         this.nf = new NF.ListeChoses();
         return Promise.resolve( this.nf );
     }
-};
+}
